@@ -1,0 +1,281 @@
+{
+  "point_accuracy": {
+    "rmse_log": 0.11133929996054287,
+    "mae": 13226.515905448725,
+    "rmse": 20912.656193487077,
+    "mape": 7.663457036489546
+  },
+  "coverage_table": [
+    {
+      "arm": "CQR (adaptive, xgboost+HistGBR quantiles)",
+      "coverage": 0.8871794871794871,
+      "avg_width": 61963.47518294911,
+      "median_width": 50663.62623426401
+    },
+    {
+      "arm": "Split-conformal (xgboost)",
+      "coverage": 0.8923076923076924,
+      "avg_width": 52073.10870210886,
+      "median_width": 46065.99149559502
+    },
+    {
+      "arm": "Split-conformal (HistGBR median, same base model as CQR)",
+      "coverage": 0.882051282051282,
+      "avg_width": 52126.442769128545,
+      "median_width": 45896.31623965321
+    },
+    {
+      "arm": "Naive fixed-width baseline",
+      "coverage": 0.8854700854700854,
+      "avg_width": 51662.53515625,
+      "median_width": 51662.5390625
+    }
+  ],
+  "bracket_table": [
+    {
+      "bracket": "Q1 (cheapest)",
+      "n": 147,
+      "mae": 9953.848745748299,
+      "rmse": 12997.415626382171,
+      "mape": 10.54516695590939
+    },
+    {
+      "bracket": "Q2",
+      "n": 148,
+      "mae": 8765.50089738177,
+      "rmse": 16875.131052041033,
+      "mape": 6.060711651826253
+    },
+    {
+      "bracket": "Q3",
+      "n": 144,
+      "mae": 11322.186957465277,
+      "rmse": 14788.544285959553,
+      "mape": 6.213627183429581
+    },
+    {
+      "bracket": "Q4 (most expensive)",
+      "n": 146,
+      "mae": 22921.96564640412,
+      "rmse": 32831.177227481865,
+      "mape": 7.816679348928485
+    }
+  ],
+  "segment_table": [
+    {
+      "segment": "NAmes",
+      "n": 98,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "OldTown",
+      "n": 46,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Gilbert",
+      "n": 43,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "CollgCr",
+      "n": 43,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Edwards",
+      "n": 39,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Somerst",
+      "n": 39,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "NridgHt",
+      "n": 30,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "NWAmes",
+      "n": 28,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Mitchel",
+      "n": 26,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Sawyer",
+      "n": 22,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "SawyerW",
+      "n": 19,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "BrkSide",
+      "n": 18,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "NoRidge",
+      "n": 17,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Crawfor",
+      "n": 17,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "IDOTRR",
+      "n": 16,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Timber",
+      "n": 14,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "StoneBr",
+      "n": 12,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "BrDale",
+      "n": 10,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "ClearCr",
+      "n": 10,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "SWISU",
+      "n": 9,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Blmngtn",
+      "n": 8,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "MeadowV",
+      "n": 6,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Veenker",
+      "n": 6,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Blueste",
+      "n": 3,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "NPkVill",
+      "n": 3,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Greens",
+      "n": 1,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "GrnHill",
+      "n": 1,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    },
+    {
+      "segment": "Landmrk",
+      "n": 1,
+      "coverage": null,
+      "avg_width": null,
+      "note": "insufficient data for a reliable estimate"
+    }
+  ],
+  "confidence_flag_validation": {
+    "flagged": {
+      "n": 38,
+      "mae": 15917.428453947365,
+      "rmse": 22408.364358151495,
+      "mape": 13.659203058934596
+    },
+    "not_flagged": {
+      "n": 547,
+      "mae": 13039.578653450646,
+      "rmse": 20804.75544457105,
+      "mape": 7.24693354681329
+    }
+  },
+  "cv_rmse_log": {
+    "linear": 0.11874424239108172,
+    "random_forest": 0.13525135340309866,
+    "xgboost": 0.11829158932963246
+  }
+}

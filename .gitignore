@@ -1,0 +1,37 @@
+# Kaggle credentials — never commit
+.kaggle/
+kaggle.json
+access_token
+
+# Data (raw/interim are gitignored; only small model artifacts are committed)
+data/raw/
+data/interim/
+data/processed/
+
+# Full CV leaderboard (all 3 candidate models incl. an 800-tree RF) is
+# large and only used for local reporting -- not needed by the deployed
+# app, which only loads model_bundle.joblib.
+artifacts/*/leaderboard.joblib
+
+# Streamlit local test log
+streamlit.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Logs
+*.log

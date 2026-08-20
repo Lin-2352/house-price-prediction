@@ -1,0 +1,133 @@
+{
+  "point_accuracy": {
+    "rmse_log": 0.6559325212999252,
+    "mae": 6021459.463059894,
+    "rmse": 20161010.439663697,
+    "mape": 51.06444659792513
+  },
+  "coverage_table": [
+    {
+      "arm": "CQR (adaptive, xgboost+HistGBR quantiles)",
+      "coverage": 0.8992620559464561,
+      "avg_width": 23488026.683037333,
+      "median_width": 20198343.12392263
+    },
+    {
+      "arm": "Split-conformal (xgboost)",
+      "coverage": 0.9052685773125108,
+      "avg_width": 21937407.568876434,
+      "median_width": 17039429.373821966
+    },
+    {
+      "arm": "Split-conformal (HistGBR median, same base model as CQR)",
+      "coverage": 0.9033808134546079,
+      "avg_width": 20956600.070711765,
+      "median_width": 16351008.807632428
+    },
+    {
+      "arm": "Naive fixed-width baseline",
+      "coverage": 0.90063497511584,
+      "avg_width": 21843718.0,
+      "median_width": 21843720.0
+    }
+  ],
+  "bracket_table": [
+    {
+      "bracket": "Q1 (cheapest)",
+      "n": 1457,
+      "mae": 2896126.174845573,
+      "rmse": 4068189.1355778934,
+      "mape": 100.45948016191097
+    },
+    {
+      "bracket": "Q2",
+      "n": 1467,
+      "mae": 1806158.1612133605,
+      "rmse": 6431459.102277365,
+      "mape": 34.802767468852444
+    },
+    {
+      "bracket": "Q3",
+      "n": 1476,
+      "mae": 2330985.2169715455,
+      "rmse": 3119327.5383281,
+      "mape": 25.29404437338864
+    },
+    {
+      "bracket": "Q4 (most expensive)",
+      "n": 1427,
+      "mae": 17363153.64523476,
+      "rmse": 39878261.729232304,
+      "mape": 44.00378301210742
+    }
+  ],
+  "segment_table": [
+    {
+      "segment": "Mumbai",
+      "n": 1331,
+      "coverage": 0.8970698722764838,
+      "avg_width": 33286416.0029002,
+      "median_width": 31608599.881026797,
+      "note": ""
+    },
+    {
+      "segment": "Kolkata",
+      "n": 1260,
+      "coverage": 0.8920634920634921,
+      "avg_width": 19670773.010253914,
+      "median_width": 19017663.045066312,
+      "note": ""
+    },
+    {
+      "segment": "Bangalore",
+      "n": 1107,
+      "coverage": 0.9186991869918699,
+      "avg_width": 20191226.466721565,
+      "median_width": 20335663.139346875,
+      "note": ""
+    },
+    {
+      "segment": "Chennai",
+      "n": 892,
+      "coverage": 0.9024663677130045,
+      "avg_width": 15607204.88284358,
+      "median_width": 16149748.344825713,
+      "note": ""
+    },
+    {
+      "segment": "Delhi",
+      "n": 842,
+      "coverage": 0.8895486935866983,
+      "avg_width": 33080713.641578738,
+      "median_width": 15978733.433624089,
+      "note": ""
+    },
+    {
+      "segment": "Hyderabad",
+      "n": 395,
+      "coverage": 0.8886075949367088,
+      "avg_width": 9235601.136485847,
+      "median_width": 5284508.846269496,
+      "note": ""
+    }
+  ],
+  "confidence_flag_validation": {
+    "flagged": {
+      "n": 310,
+      "mae": 8363858.407258063,
+      "rmse": 25355726.39648303,
+      "mape": 62.140753429993765
+    },
+    "not_flagged": {
+      "n": 5517,
+      "mae": 5889840.164038426,
+      "rmse": 19828777.619781867,
+      "mape": 50.44206937879494
+    }
+  },
+  "cv_rmse_log": {
+    "linear": 0.6815644633423983,
+    "random_forest": 0.6541575309602368,
+    "xgboost": 0.6494129066086597
+  }
+}
