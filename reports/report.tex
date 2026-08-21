@@ -1,4 +1,4 @@
-\documentclass[12pt]{article}
+\documentclass[12pt]{report}
 
 \usepackage[a4paper,margin=1in]{geometry}
 \usepackage{times}
@@ -10,6 +10,7 @@
 \usepackage{enumitem}
 \usepackage{fancyhdr}
 \usepackage{setspace}
+\usepackage{longtable}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 
 \onehalfspacing
@@ -30,39 +31,160 @@
 
 \begin{document}
 
+% =======================================================================
+% FRONT MATTER
+% =======================================================================
+\pagenumbering{roman}
+
 % ---------------------------------------------------------------------
-% (a) Title Page
+% Title Page
 % ---------------------------------------------------------------------
 \begin{titlepage}
 \centering
-\vspace*{1.5cm}
+\vspace*{0.3cm}
+\includegraphics[width=3cm]{figures/kiit_logo.png}\par
+\vspace{0.5cm}
+{\large \textbf{A PROJECT REPORT}\par}
+\vspace{0.25cm}
+{\normalsize on\par}
+\vspace{0.4cm}
 {\LARGE \textbf{House Price Prediction with Reliable Price Ranges}\par}
 {\LARGE \textbf{and Clear Explanations}\par}
-\vspace{1.2cm}
-{\large PROJECT REPORT\par}
-{\large OF MAJOR PROJECT\par}
-\vspace{1.5cm}
+\vspace{0.7cm}
+{\normalsize Submitted to\par}
+\vspace{0.15cm}
+{\large \textbf{KIIT Deemed to be University}\par}
+\vspace{0.3cm}
+{\normalsize In Partial Fulfilment of the Requirement for the Award of\par}
+\vspace{0.2cm}
 {\large \textbf{BACHELOR OF TECHNOLOGY}\par}
-{\large Computer Science and Engineering\par}
-\vspace{1.5cm}
-{\normalsize SUBMITTED BY\par}
-\vspace{0.3cm}
+{\large IN\par}
+{\large \textbf{COMPUTER SCIENCE AND ENGINEERING}\par}
+\vspace{0.7cm}
+{\normalsize BY\par}
+\vspace{0.2cm}
 {\large Deepjyoti Bhattacharyya \quad 23053381\par}
-\vspace{1.5cm}
+\vspace{0.7cm}
 {\normalsize UNDER THE GUIDANCE OF\par}
-\vspace{0.3cm}
+\vspace{0.2cm}
 {\large \textbf{Ms. Monalisha Mahapatra}\par}
 \vfill
 {\large \textbf{SCHOOL OF COMPUTER ENGINEERING}\par}
 {\large \textbf{KIIT DEEMED TO BE UNIVERSITY}\par}
-\vspace{1cm}
+{\large \textbf{BHUBANESWAR, ODISHA -- 751024}\par}
+\vspace{0.3cm}
+{\normalsize AUGUST 2026\par}
 \end{titlepage}
 
 % ---------------------------------------------------------------------
-% (b) Abstract
+% Certificate
 % ---------------------------------------------------------------------
+\newpage
+\thispagestyle{fancy}
+\begin{center}
+{\large \textbf{CERTIFICATE}}
+\end{center}
+\vspace{0.6cm}
+
+This is to certify that the project report entitled \textbf{``House Price
+Prediction with Reliable Price Ranges and Clear Explanations''} submitted by
+\textbf{Deepjyoti Bhattacharyya (Roll No.\ 23053381)} to KIIT Deemed to be
+University, Bhubaneswar, in partial fulfilment of the requirement for the
+award of the degree of \textbf{Bachelor of Technology} in \textbf{Computer
+Science and Engineering}, is a bona fide record of work carried out by him
+under my supervision and guidance.
+
+To the best of my knowledge, the matter embodied in this report has not been
+submitted elsewhere for the award of any other degree.
+
+\vspace{2cm}
+\noindent
+\begin{minipage}[t]{0.45\textwidth}
+Date: \\
+Place: Bhubaneswar
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+\raggedleft
+\textbf{Ms.\ Monalisha Mahapatra} \\
+Project Guide \\
+School of Computer Engineering \\
+KIIT Deemed to be University
+\end{minipage}
+
+% ---------------------------------------------------------------------
+% Declaration
+% ---------------------------------------------------------------------
+\newpage
+\thispagestyle{fancy}
+\begin{center}
+{\large \textbf{DECLARATION}}
+\end{center}
+\vspace{0.6cm}
+
+I hereby declare that the project report entitled \textbf{``House Price
+Prediction with Reliable Price Ranges and Clear Explanations''} submitted by
+me to the School of Computer Engineering, KIIT Deemed to be University, is a
+record of bona fide work carried out by me under the supervision of Ms.\
+Monalisha Mahapatra.
+
+I further declare that the work reported in this project has not been
+submitted, either in part or in full, for the award of any other degree or
+diploma of this institute or of any other institute or university, and that
+all datasets, libraries, and prior published work used are duly acknowledged
+and cited in this report.
+
+\vspace{2cm}
+\noindent
+\begin{minipage}[t]{0.45\textwidth}
+Date: \\
+Place: Bhubaneswar
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+\raggedleft
+\textbf{Deepjyoti Bhattacharyya} \\
+Roll No.\ 23053381
+\end{minipage}
+
+% ---------------------------------------------------------------------
+% Acknowledgement
+% ---------------------------------------------------------------------
+\newpage
+\thispagestyle{fancy}
+\begin{center}
+{\large \textbf{ACKNOWLEDGEMENT}}
+\end{center}
+\vspace{0.6cm}
+
+I would like to express my sincere gratitude to my project guide, \textbf{Ms.\
+Monalisha Mahapatra}, School of Computer Engineering, KIIT Deemed to be
+University, for her constant guidance, valuable suggestions, and patient
+review throughout the course of this project. Her feedback on the
+methodology, particularly on being honest about the limitations of the
+underlying data rather than overstating the model's accuracy, shaped the
+direction of this work in a meaningful way.
+
+I am also grateful to the School of Computer Engineering, KIIT Deemed to be
+University, for providing the academic environment, coursework, and computing
+resources that made this project possible.
+
+Finally, I acknowledge the open-source and open-data communities whose tools
+and datasets this project builds on directly: the maintainers of scikit-learn,
+XGBoost, MAPIE, FastAPI, and Streamlit, and the Kaggle contributor who
+compiled and shared the ``Housing Prices in Metropolitan Areas of India''
+dataset used throughout this report.
+
+\vspace{2cm}
+\noindent
+\textbf{Deepjyoti Bhattacharyya}
+
+% ---------------------------------------------------------------------
+% Abstract
+% ---------------------------------------------------------------------
+\newpage
 \section*{Abstract}
-\addcontentsline{toc}{section}{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
 
 Most house-price tools, including commercial ones, report a single confident-looking
 number and a single average accuracy figure, giving a user no way to tell whether
@@ -86,10 +208,59 @@ averaged away. Predictions flagged low-confidence showed 62.1\% MAPE versus
 deployed as a FastAPI service with a hand-built frontend, backed by a Streamlit
 fallback, both serving the same pipeline.
 
+\textbf{Keywords:} house price prediction, conformal prediction, uncertainty
+quantification, SHAP, XGBoost, explainable machine learning.
+
 % ---------------------------------------------------------------------
-% (c) Introduction
+% Table of Contents / List of Figures / List of Tables
 % ---------------------------------------------------------------------
-\section{Introduction}
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+
+\newpage
+\listoftables
+
+% ---------------------------------------------------------------------
+% List of Abbreviations
+% ---------------------------------------------------------------------
+\newpage
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\begin{table}[h]
+\centering
+\begin{tabular}{ll}
+\toprule
+Abbreviation & Meaning \\
+\midrule
+API & Application Programming Interface \\
+CQR & Conformalized Quantile Regression \\
+CSS & Cascading Style Sheets \\
+CV & Cross-Validation \\
+HTML & HyperText Markup Language \\
+JS & JavaScript \\
+MAE & Mean Absolute Error \\
+MAPE & Mean Absolute Percentage Error \\
+MAPIE & Model Agnostic Prediction Interval Estimator \\
+RMSE & Root Mean Squared Error \\
+SHAP & SHapley Additive exPlanations \\
+XGBoost & eXtreme Gradient Boosting \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =======================================================================
+% MAIN MATTER
+% =======================================================================
+\newpage
+\pagenumbering{arabic}
+
+% ---------------------------------------------------------------------
+% Chapter 1: Introduction
+% ---------------------------------------------------------------------
+\chapter{Introduction}
 
 Buying a house is the largest single purchase most families make, and almost nobody
 knows what the house they are looking at is actually worth. The usual recourse is an
@@ -114,7 +285,18 @@ trusted at all. This project treats predicting the price as the easy part, and b
 honest about how much to trust each individual prediction as the part worth doing
 properly.
 
-\subsection{Objectives}
+\section{Problem Statement}
+Given the attributes of a residential flat in an Indian metro city -- its floor
+area, locality, city, bedroom count, resale status, and a set of amenities -- the
+problem this project addresses is threefold, not merely ``predict the price'':
+(1) produce a point price estimate that is as accurate as the available data
+permits; (2) attach to that estimate a range that is verified, not assumed, to
+contain the true price at a stated rate; and (3) identify, before the fact, which
+predictions are unreliable enough that the user should seek a professional opinion
+instead of trusting the model. A system that only solves the first of these three is
+solving the easier, and less useful, problem.
+
+\section{Objectives}
 \label{sec:objectives}
 \begin{enumerate}[label=\arabic*.]
 \item Clean and prepare a real Indian metropolitan housing dataset, and train and
@@ -136,7 +318,7 @@ honestly, including separate results by price bracket and by city, so that a goo
 overall average cannot hide poor behaviour on any one segment.
 \end{enumerate}
 
-\subsection{Contributions}
+\section{Contributions}
 \begin{enumerate}[label=\arabic*.]
 \item A leakage-safe data pipeline for a real, messy Indian housing dataset:
 duplicate removal, principled handling of a placeholder ``not recorded'' code across
@@ -151,19 +333,20 @@ output, which is mathematically identical to SHAP's TreeExplainer values for tre
 ensembles, chosen specifically so the deployed web service does not need to import
 the heavier \texttt{shap} package at runtime.
 \item A three-signal, empirically calibrated confidence flag (range width, novelty
-relative to training data, and missing important fields) that is shown in Section~\ref{sec:results}
-to actually separate worse predictions from better ones, not merely to look
-reassuring.
+relative to training data, and missing important fields) that is shown in
+Chapter~\ref{ch:results} to actually separate worse predictions from better ones, not
+merely to look reassuring.
 \item A working, deployed system: a FastAPI backend serving a hand-built HTML/CSS/JavaScript
 frontend, plus a Streamlit application kept live as a fallback, both driven by the
 same trained pipeline with no duplicated modelling logic.
 \end{enumerate}
 
 % ---------------------------------------------------------------------
-% (d) Related Work / Literature Review
+% Chapter 2: Related Work / Literature Review
 % ---------------------------------------------------------------------
-\section{Related Work / Literature Review}
+\chapter{Related Work / Literature Review}
 
+\section{Tabular Model Choice: Trees versus Deep Learning}
 Grinsztajn, Oyallon and Varoquaux (NeurIPS, 2022) benchmarked deep learning against
 tree-based methods across 45 tabular datasets and found that tree-based models such as
 gradient boosting and random forests remain the strongest choice on medium-sized
@@ -172,12 +355,14 @@ training cost. The Indian housing dataset used in this project sits squarely in 
 range, which is the reason this project does not use a neural network: on data of
 this shape and size, it would cost more and deliver less.
 
+\section{Hedonic Pricing Theory}
 Rosen (Journal of Political Economy, 1974) set out the economic idea underlying price
 prediction of this kind: a house is a bundle of separate attributes, and its price is
 built up from what buyers will pay for each of them. This is why explaining a
 prediction feature by feature is meaningful rather than decorative, and it is the
 basis for the per-house explanations produced in this project.
 
+\section{Conformal Prediction}
 Romano, Patterson and Cand\`es (NeurIPS, 2019) and the survey by Angelopoulos and
 Bates (2021) describe conformal prediction, the main technique this project depends
 on for its price ranges. It turns any trained model into one that outputs a range
@@ -188,6 +373,7 @@ variant proposed by Romano and colleagues, used here as the adaptive arm, widens
 range where the model is genuinely uncertain and keeps it narrow for ordinary houses,
 which is exactly the behaviour a buyer needs.
 
+\section{Explainability}
 Lundberg and Lee (NIPS, 2017) introduced SHAP, which splits an individual prediction
 into the contribution of each input feature using a fair-division result from game
 theory. For tree ensembles specifically, this project computes the same underlying
@@ -196,18 +382,35 @@ rather than through the separate \texttt{shap} package, since the two are equiva
 for tree models and avoiding the extra dependency matters for the memory budget of
 the deployed service.
 
+\section{The Zillow Offers Case}
 Finally, the closure of Zillow Offers in 2021, examined in the Journal of Information
 Systems Education (2024), is the clearest practical evidence for the problem this
 project addresses: a well-built model with a respectable average error still caused
 large losses, because the business acted on individual estimates without accounting
 for how uncertain any one of them was.
 
-% ---------------------------------------------------------------------
-% (e) Methodology
-% ---------------------------------------------------------------------
-\section{Methodology (Work Done)}
+\section{Summary of Research Gaps}
+Read together, these five threads point to the same gap this project fills. Tree
+ensembles are established as the right model family for tabular data of this size
+(Grinsztajn et al.), hedonic theory justifies feature-level explanation as
+economically meaningful rather than cosmetic (Rosen), conformal prediction supplies a
+statistically guaranteed way to quantify uncertainty around a point estimate (Romano
+et al.; Angelopoulos and Bates), and SHAP-equivalent contributions make that
+explanation computable without extra runtime cost (Lundberg and Lee; Chen and
+Guestrin). What none of this literature does on its own is combine all three --
+accurate point prediction, verified uncertainty, and per-house explanation -- into one
+deployed system and then check, on real held-out data, that the uncertainty estimates
+and the confidence flag actually correlate with where the model is wrong. The Zillow
+Offers case (Journal of Information Systems Education, 2024) is the standing
+real-world argument for why that combination, not just the point estimate, is the part
+worth building.
 
-\subsection{Data}
+% ---------------------------------------------------------------------
+% Chapter 3: Methodology
+% ---------------------------------------------------------------------
+\chapter{Methodology (Work Done)}
+
+\section{Data}
 The dataset is a public collection of residential listing prices across six Indian
 metro cities -- Bangalore, Chennai, Delhi, Hyderabad, Kolkata, and Mumbai -- drawn
 from Kaggle. Combined across the six per-city files it contains 32{,}963 rows and 40
@@ -218,7 +421,23 @@ openly rather than hidden: the price column is an asking price, not a confirmed 
 price, and there is no transaction date, so the model reflects the period the data
 was collected in rather than tracking the market over time.
 
-\subsection{Cleaning}
+Figure~\ref{fig:distribution} shows why price and floor area are treated specially
+during feature engineering (Section~\ref{sec:feateng}): both are heavily
+right-skewed even before any cleaning, with a raw skewness of 13.92 for price and
+3.55 for area, so a small number of very expensive, very large listings would
+otherwise dominate a model trained on the raw scale.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\textwidth]{figures/price_area_distribution.pdf}
+\caption{Distribution of raw listing price (in crore rupees) and floor area (in
+square feet) before cleaning, six-city combined data. Both distributions are
+strongly right-skewed, motivating the log-transform described in
+Section~\ref{sec:feateng}.}
+\label{fig:distribution}
+\end{figure}
+
+\section{Cleaning}
 Schema inspection showed that each amenity column uses a placeholder value of 9 to
 mean ``not recorded'' for roughly 70\% of rows; every value outside $\{0,1\}$ is
 converted to a genuine missing value rather than assumed to be one specific guessed
@@ -226,33 +445,43 @@ code. Exact duplicate rows are removed, dropping 3{,}828 of the 32{,}963 rows
 (11.6\%) and leaving 29{,}135 rows for modelling. Rows with non-positive price or
 area are also dropped as data-entry errors.
 
-\subsection{Feature Engineering}
+\section{Feature Engineering}
+\label{sec:feateng}
 The free-text locality column has a long tail of names occurring once or twice;
 localities occurring fewer than 15 times in the training split are collapsed into an
 ``other'' category before encoding, and the locality and city columns are then
 encoded with scikit-learn's cross-fitted \texttt{TargetEncoder}, fit only on the
 training split so no calibration or test information leaks into the encoding. Price
-and floor area, both heavily right-skewed, are log-transformed. Price-per-area-style
-features are deliberately excluded, since they are computed from the target and would
-produce impressive but meaningless accuracy. No feature based on caste, religion, or
-community composition is used, a deliberate constraint given that locality names in
-Indian data can otherwise act as a proxy for such attributes.
+and floor area, both heavily right-skewed (Figure~\ref{fig:distribution}), are
+log-transformed. Price-per-area-style features are deliberately excluded, since they
+are computed from the target and would produce impressive but meaningless accuracy.
+No feature based on caste, religion, or community composition is used, a deliberate
+constraint given that locality names in Indian data can otherwise act as a proxy for
+such attributes.
 
-\subsection{Splitting, Training, and Uncertainty}
+\section{Splitting, Training, and Uncertainty}
 The cleaned data is split 60/20/20 into training, calibration, and test portions. The
 calibration split is used only to build price ranges, never to fit or tune a model;
 the test split is touched exactly once, for final evaluation. Three models --
 regularised linear regression (Ridge), Random Forest, and XGBoost -- are tuned by
-cross-validation on the training split alone (Table~\ref{tab:cv}); XGBoost was
-selected as the point-prediction model. Price ranges at the 90\% level are built two
-ways using MAPIE's current (v1) API: split-conformal on the XGBoost model, and an
-adaptive, quantile-based variant (CQR) using a triplet of \texttt{HistGradientBoosting}
-quantile models, since MAPIE's CQR implementation does not currently support
-XGBoost directly. Both arms are compared against a no-range baseline and a naive
-fixed-width band calibrated on the same calibration split, so the value of an
-adaptive range is demonstrated rather than assumed.
+cross-validation on the training split alone (Table~\ref{tab:cv}, Figure~\ref{fig:cv});
+XGBoost was selected as the point-prediction model. Price ranges at the 90\% level are
+built two ways using MAPIE's current (v1) API: split-conformal on the XGBoost model,
+and an adaptive, quantile-based variant (CQR) using a triplet of
+\texttt{HistGradientBoosting} quantile models, since MAPIE's CQR implementation does
+not currently support XGBoost directly. Both arms are compared against a no-range
+baseline and a naive fixed-width band calibrated on the same calibration split, so the
+value of an adaptive range is demonstrated rather than assumed.
 
-\subsection{Explanation and Confidence}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{figures/cv_leaderboard.pdf}
+\caption{Cross-validated log-price RMSE for the three candidate models, training
+split (lower is better). XGBoost was selected.}
+\label{fig:cv}
+\end{figure}
+
+\section{Explanation and Confidence}
 \label{sec:explconf}
 Per-house explanations are produced from XGBoost's native feature-contribution
 output rather than the \texttt{shap} package -- the two are mathematically
@@ -269,27 +498,75 @@ novelty are, for this dataset, only weakly correlated, so requiring two ordinary
 signals to agree could under-flag genuinely unusual houses that only one signal
 catches strongly.
 
-\subsection{Deployment}
-The trained pipeline is served two ways from the same artefacts: a FastAPI backend
-(\texttt{/api/schema}, \texttt{/api/predict}, \texttt{/api/metrics}) behind a
-hand-built HTML, CSS, and JavaScript frontend, deployed on Render, and a Streamlit
-application kept live as a fallback. Both call the identical trained model,
-conformal objects, and confidence-flag logic -- no modelling code is duplicated
-between them. The web form treats city and floor area as required, since a price
+\subsection{Confidence Flag Calibration}
+Figure~\ref{fig:novelty} makes this weak correlation concrete: on the calibration
+split ($n=5{,}827$), the Pearson correlation between a house's novelty score and its
+range-width ratio is $r=-0.65$ -- the two signals are, if anything, mildly
+anti-correlated rather than reinforcing one another. A house can therefore be highly
+novel relative to the training data while still receiving a comparatively narrow
+range (because the underlying quantile models happen to agree on it), or vice versa.
+This is precisely why the flagging rule combines three independent signals with a
+2-of-3 vote rather than relying on any single one, and why the 97th-percentile
+``extreme single signal'' override exists: without it, a house that is extremely
+novel but only moderately wide-ranged, or extremely wide-ranged but only moderately
+novel, could pass through both ordinary thresholds unflagged.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/novelty_vs_width.pdf}
+\caption{Novelty score versus range-width ratio on the calibration split
+($n=5{,}827$, $r=-0.65$), showing the two signals are not redundant with each
+other -- justifying the three-signal, 2-of-3 design described in
+Section~\ref{sec:explconf}.}
+\label{fig:novelty}
+\end{figure}
+
+\section{Deployment}
+\subsection{System Architecture}
+The trained pipeline is served two ways from the same artefacts (Figure~\ref{fig:arch}):
+a FastAPI backend (\texttt{/api/schema}, \texttt{/api/predict}, \texttt{/api/metrics})
+behind a hand-built HTML, CSS, and JavaScript frontend, deployed on Render, and a
+Streamlit application kept live as a fallback on Streamlit Community Cloud. Both call
+the identical trained model, conformal objects, and confidence-flag logic through the
+shared \texttt{src/} package -- \texttt{api/inference.py} reuses those modules
+directly rather than reimplementing any modelling step, so no ML logic is duplicated
+or can silently diverge between the two apps. The FastAPI service loads a trimmed
+\texttt{api\_bundle.joblib} that omits the \texttt{shap} package as a runtime
+dependency, since XGBoost's native contribution output is used instead
+(Section~\ref{sec:explconf}); this matters concretely on Render's free tier, which
+caps the service at 512\,MB of memory.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/architecture.pdf}
+\caption{System architecture: two frontends served by one shared pipeline, with no
+modelling logic duplicated between them.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Web Form Design}
+The web form treats city and floor area as required, since a price
 estimate is least meaningful without either, while locality, bedroom count, and
 resale status may be left unanswered, which is tracked by the confidence flag rather
-than silently ignored.
+than silently ignored. Figure~\ref{fig:appform} shows the deployed form.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/app_form.png}
+\caption{The deployed application's input form (house-price-estimator-india.onrender.com).}
+\label{fig:appform}
+\end{figure}
 
 % ---------------------------------------------------------------------
-% (f) Results and Analysis
+% Chapter 4: Results and Analysis
 % ---------------------------------------------------------------------
-\section{Results and Analysis}
-\label{sec:results}
+\chapter{Results and Analysis}
+\label{ch:results}
 
-All figures in this section are computed on the test split, which was touched exactly
+All figures in this chapter are computed on the test split, which was touched exactly
 once after every modelling and calibration decision was finalised.
 
-\subsection{Point-Prediction Accuracy}
+\section{Point-Prediction Accuracy}
 Table~\ref{tab:cv} shows the cross-validated log-price RMSE used to select XGBoost as
 the point-prediction model on the training split. Table~\ref{tab:point} shows its
 accuracy on the held-out test split, reported both on the log scale used for model
@@ -332,7 +609,7 @@ limitations -- asking prices rather than confirmed sales, no transaction date, a
 roughly 70\% missing amenity data -- rather than a failure of the modelling approach;
 Figure~\ref{fig:bracket} breaks this down further by price bracket.
 
-\subsection{Price-Range Coverage}
+\section{Price-Range Coverage}
 Table~\ref{tab:coverage} and Figure~\ref{fig:coverage} compare all four range-building
 methods against their shared 90\% target. Every method lands within about one
 percentage point of the target, which is itself a result: it shows the calibration
@@ -373,13 +650,14 @@ for lower-value listings.}
 \label{fig:bracket}
 \end{figure}
 
-\subsection{Coverage by City}
+\section{Coverage by City}
 No city in the test set was excluded from this breakdown, since every one had at
 least the minimum 100 test rows required to report a reliable per-segment number
-(Table~\ref{tab:city}). Coverage stays close to 90\% in every city, though average
-range width varies by roughly a factor of three between the cheapest and most
-expensive markets, showing that the adaptive range genuinely tracks each city's own
-price volatility rather than applying one national-average width everywhere.
+(Table~\ref{tab:city}, Figure~\ref{fig:city}). Coverage stays close to 90\% in every
+city, though average range width varies by roughly a factor of three between the
+cheapest and most expensive markets, showing that the adaptive range genuinely tracks
+each city's own price volatility rather than applying one national-average width
+everywhere.
 
 \begin{table}[h]
 \centering
@@ -399,7 +677,15 @@ Mumbai & 1{,}331 & 89.7\% & Rs.\,3.33 Cr \\
 \end{tabular}
 \end{table}
 
-\subsection{Does the Confidence Flag Mean Anything}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.75\textwidth]{figures/coverage_by_city.pdf}
+\caption{CQR coverage by city, test split, against the 90\% target (dashed line).
+All six cities land within roughly two points of target.}
+\label{fig:city}
+\end{figure}
+
+\section{Does the Confidence Flag Mean Anything}
 The confidence flag is only useful if a flagged prediction is actually worse; Table
 \ref{tab:flag} confirms this on the test split, which the flag's calibration never
 saw. Flagged predictions show 62.1\% MAPE against 50.4\% for the rest -- a real,
@@ -420,22 +706,63 @@ Not flagged & 5{,}517 & Rs.\,58.90 lakh & 50.4\% \\
 \end{tabular}
 \end{table}
 
-% ---------------------------------------------------------------------
-% (g) Conclusion and Future Work
-% ---------------------------------------------------------------------
-\section{Conclusion and Future Work}
+\section{The Deployed Application in Use}
+Figure~\ref{fig:appresult} shows a live prediction on the deployed application for a
+1,450 sq.\ ft.\ resale flat in Whitefield, Bangalore: a predicted price of Rs.\,73.99
+lakh with a 90\% range of Rs.\,27.57 lakh to Rs.\,2.97 crore, rendered with the same
+range-visualisation logic evaluated quantitatively in
+Section~\ref{sec:feateng}--\ref{ch:results} above. This end-to-end trace, from a raw
+form submission through the deployed API back to a rendered chart, is what
+Section~\ref{sec:objectives}'s fifth objective -- a working web application, evaluated
+honestly -- refers to in practice, not only as a set of offline numbers.
 
-All five objectives set out in Section~\ref{sec:objectives} were met on real data, not only in
-principle. Three candidate models were cleaned, trained, and compared honestly rather
-than only reporting the winner; price ranges were built with conformal prediction and
-verified, not assumed, to reach their claimed 90\% coverage on data touched exactly
-once; every prediction carries a feature-level explanation and a confidence flag
-shown to correlate with real prediction error; and the whole system runs as a
-deployed web application rather than a notebook. The project's central finding is
-that reliability can be measured and delivered even when point accuracy is weak: a
-51.1\% MAPE, driven by asking-price noise and missing data rather than a modelling
-shortfall, still comes with price ranges that hit their 90\% target and a confidence
-flag that reliably identifies the predictions least worth trusting.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.55\textwidth]{figures/app_prediction.png}
+\caption{A live prediction on the deployed application, showing the predicted price,
+the 90\% range, the low-confidence check, and the per-feature explanation chart for
+a sample Bangalore flat.}
+\label{fig:appresult}
+\end{figure}
+
+% ---------------------------------------------------------------------
+% Chapter 5: Conclusion and Future Work
+% ---------------------------------------------------------------------
+\chapter{Conclusion and Future Work}
+
+All five objectives set out in Section~\ref{sec:objectives} were met on real data, not
+only in principle. Three candidate models were cleaned, trained, and compared honestly
+rather than only reporting the winner; price ranges were built with conformal
+prediction and verified, not assumed, to reach their claimed 90\% coverage on data
+touched exactly once; every prediction carries a feature-level explanation and a
+confidence flag shown to correlate with real prediction error; and the whole system
+runs as a deployed web application rather than a notebook. The project's central
+finding is that reliability can be measured and delivered even when point accuracy is
+weak: a 51.1\% MAPE, driven by asking-price noise and missing data rather than a
+modelling shortfall, still comes with price ranges that hit their 90\% target and a
+confidence flag that reliably identifies the predictions least worth trusting.
+
+Table~\ref{tab:traceability} traces each objective from Section~\ref{sec:objectives}
+to the chapter and section where it was addressed and verified, so the correspondence
+between what was promised and what was delivered is explicit rather than left to be
+inferred.
+
+\begin{table}[h]
+\centering
+\caption{Objectives traceability.}
+\label{tab:traceability}
+\begin{tabular}{p{0.08\textwidth}p{0.44\textwidth}p{0.38\textwidth}}
+\toprule
+\# & Objective & Addressed in \\
+\midrule
+1 & Clean data; train and compare Ridge, Random Forest, XGBoost & Sections~3.1--3.4, 4.1 \\
+2 & 90\% conformal price ranges, empirically verified & Sections~3.4, 4.2 \\
+3 & Per-house feature explanations & Section~3.5 \\
+4 & Low-confidence flag for unusual/wide-range houses & Sections~3.5, 4.4 \\
+5 & Working web application, evaluated honestly & Sections~3.6, 4.3, 4.5 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 The clearest limitation is the data itself. Asking prices are not confirmed sales,
 there is no transaction date to track the market over time, and roughly 70\% of
@@ -448,14 +775,14 @@ only the period its training data was collected in; (3) a native mobile client
 against the existing FastAPI backend, which already separates the model-serving API
 from the frontend; and (4) revisiting the confidence flag's two-tier design as more
 data becomes available, since the anti-correlation found between range width and
-novelty for this dataset (Section~\ref{sec:explconf}) is itself worth further investigation rather
-than only working around.
+novelty for this dataset (Section~\ref{sec:explconf}) is itself worth further
+investigation rather than only working around.
 
 % ---------------------------------------------------------------------
-% (h) References
+% References
 % ---------------------------------------------------------------------
-\section*{References}
-\addcontentsline{toc}{section}{References}
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
 \begin{enumerate}[label={[\arabic*]}, leftmargin=2.2em]
 
 \item ``Housing Prices in Metropolitan Areas of India,'' Kaggle dataset,
@@ -488,5 +815,41 @@ Predictions,'' in \emph{Advances in Neural Information Processing Systems}, vol.
 Information Systems Education}, vol.\ 35, no.\ 1, pp.\ 67--72, 2024.
 
 \end{enumerate}
+
+% ---------------------------------------------------------------------
+% Appendix
+% ---------------------------------------------------------------------
+\appendix
+\chapter{Project Directory Structure}
+
+The repository is organised so that no modelling logic is duplicated between the two
+deployed applications; both call directly into \texttt{src/}.
+
+{\scriptsize
+\begin{verbatim}
+src/
+|-- config.py                  # paths, seed, per-market registry
+|-- data/                      # acquire, clean, split
+|-- features/                  # per-market feature engineering + shared preprocessing
+|-- models/                    # train/tune, quantile models, persistence
+|-- uncertainty/               # conformal prediction (MAPIE) + baselines
+|-- explain/
+|   |-- feature_names.py       # shap-independent column-name aggregation (shared)
+|   `-- shap_explainer.py      # SHAP explanations (pipeline/Streamlit only)
+|-- confidence/                # low-confidence flag
+|-- evaluation/                # metrics, coverage/width tables, report writer
+`-- pipeline.py                # end-to-end orchestration
+api/
+|-- main.py                    # FastAPI app: /api/schema, /api/predict, /api/metrics
+`-- inference.py                # request handling, reuses src/ (no ML logic duplicated)
+web/                            # static HTML/CSS/JS frontend served by api/main.py
+app.py                          # Streamlit app (kept live as a fallback)
+tests/                          # unit tests
+reports/                        # generated evaluation reports
+artifacts/{ames,india}/         # model_bundle.joblib (full) + api_bundle.joblib (trimmed)
+render.yaml                     # Render.com Blueprint for the FastAPI service
+requirements-api.txt            # slim deps for the deployed API (no shap/streamlit/kaggle)
+\end{verbatim}
+}
 
 \end{document}
