@@ -16,6 +16,9 @@ Delhi, Hyderabad, Kolkata, Mumbai) that reports, for every prediction:
 This is a demonstration project, not a licensed valuation service — every
 prediction the app returns says so explicitly.
 
+**Live:** https://house-price-estimator-india.onrender.com (primary) ·
+https://house-price-estimator-kiit.streamlit.app (Streamlit fallback)
+
 ## Two apps, same backend
 
 | | Primary app | Streamlit app |
