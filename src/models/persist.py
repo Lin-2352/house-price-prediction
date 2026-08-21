@@ -35,6 +35,41 @@ def load_bundle(market_dir: Path) -> dict:
     return bundle
 
 
+API_BUNDLE_KEYS = [
+    "market", "spec", "point_model", "point_model_name", "cqr", "split_conformal",
+    "fixed_half_width", "confidence_flagger", "important_fields", "form_schema",
+    "currency_symbol", "currency_code", "price_col", "segment_col", "log_feature_cols",
+    "test_rmse_log", "test_mape", "cv_rmse_log",
+]
+
+
+def save_api_bundle(market_dir: Path, bundle: dict) -> Path:
+    """Writes a trimmed copy of the bundle for the deployed FastAPI service:
+    drops `explainer` (a pickled shap.TreeExplainer -- requires `shap`
+    importable just to unpickle, which pulls in numba/llvmlite and is the
+    single biggest memory risk on a 512MB Render free instance) and
+    `quantile_triplet` (only needed to construct `cqr`; MAPIE's fitted
+    ConformalizedQuantileRegressor is self-contained after conformalize()).
+    The API computes feature contributions via XGBoost's native
+    `pred_contribs=True` instead, which is mathematically identical to
+    TreeExplainer's SHAP values for tree ensembles -- not an approximation.
+    """
+    trimmed = {k: bundle[k] for k in API_BUNDLE_KEYS if k in bundle}
+    trimmed["_version"] = BUNDLE_VERSION
+    path = market_dir / "api_bundle.joblib"
+    joblib.dump(trimmed, path, compress=3)
+    print(f"Saved API bundle to {path} ({path.stat().st_size / 1e6:.1f} MB)")
+    return path
+
+
+def load_api_bundle(market_dir: Path) -> dict:
+    path = market_dir / "api_bundle.joblib"
+    bundle = joblib.load(path)
+    if bundle.get("_version") != BUNDLE_VERSION:
+        print(f"Warning: API bundle version mismatch ({bundle.get('_version')} != {BUNDLE_VERSION})")
+    return bundle
+
+
 def save_leaderboard(market_dir: Path, leaderboard: dict) -> None:
     path = market_dir / "leaderboard.joblib"
     joblib.dump(leaderboard, path, compress=3)

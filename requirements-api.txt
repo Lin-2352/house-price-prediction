@@ -1,0 +1,15 @@
+# Slim requirements for the deployed FastAPI service (api/main.py) --
+# deliberately excludes shap, streamlit, plotly, kaggle, tabulate, pyarrow,
+# which the full requirements.txt needs for the pipeline/Streamlit app but
+# the API doesn't (see src/models/persist.py::save_api_bundle for why shap
+# is avoided here specifically -- it's the biggest memory risk on Render's
+# 512MB free tier).
+fastapi==0.135.1
+uvicorn[standard]==0.42.0
+pandas==3.0.1
+numpy==2.3.5
+scikit-learn==1.8.0
+xgboost==3.4.1
+mapie==1.4.1
+joblib==1.5.3
+pydantic==2.12.5

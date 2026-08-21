@@ -15,6 +15,10 @@ artifacts/*/leaderboard.joblib
 
 # Streamlit local test log
 streamlit.log
+uvicorn*.log
+
+# Claude Code harness state
+.claude/
 
 # Python
 __pycache__/

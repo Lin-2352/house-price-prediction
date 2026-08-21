@@ -182,6 +182,7 @@ def run_market(name: str) -> None:
         "cv_rmse_log": results["cv_rmse_log"],
     }
     persist.save_bundle(market.artifact_dir, bundle)
+    persist.save_api_bundle(market.artifact_dir, bundle)
     persist.save_leaderboard(market.artifact_dir, {
         "cv_rmse_log": results["cv_rmse_log"],
         "models": {k: results[k] for k in ("linear", "random_forest", "xgboost")},

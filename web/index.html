@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="darkreader-lock">
+<title>House Price Estimator — India</title>
+<meta name="description" content="A house-price estimator for Indian metro flats that reports a price range and confidence, not just a single number.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand">🏠 <span>HomeEstimate</span> <span class="brand-badge">India</span></div>
+    <h1>What's this flat actually worth?</h1>
+    <p class="hero-sub">
+      Not just a single confident-looking number. A predicted price, a 90%-confidence
+      range validated by conformal prediction, and a plain explanation of what drove
+      the estimate — for flats in Bangalore, Chennai, Delhi, Hyderabad, Kolkata &amp; Mumbai.
+    </p>
+    <div id="model-badge" class="model-badge">Loading model…</div>
+  </div>
+</header>
+
+<main class="container">
+
+  <form id="estimate-form" class="card form-card">
+    <div id="form-groups"><!-- injected by app.js --></div>
+
+    <div class="field-row range-method-row">
+      <span class="field-label">Range method</span>
+      <div class="radio-pill-group" id="range-method">
+        <label class="radio-pill"><input type="radio" name="range_method" value="cqr" checked> Adaptive (CQR) — recommended</label>
+        <label class="radio-pill"><input type="radio" name="range_method" value="split_conformal"> Split-conformal</label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-primary" id="submit-btn">Estimate price</button>
+  </form>
+
+  <section id="results" class="results hidden" aria-live="polite">
+    <div class="card result-card">
+      <div class="price-row">
+        <div class="price-block">
+          <div class="price-label">Predicted price</div>
+          <div class="price-value" id="price-value">—</div>
+          <div class="price-sub" id="price-sub"></div>
+        </div>
+        <div class="price-block">
+          <div class="price-label">90% range — low</div>
+          <div class="price-value price-value-sm" id="range-low">—</div>
+          <div class="price-sub" id="range-low-sub"></div>
+        </div>
+        <div class="price-block">
+          <div class="price-label">90% range — high</div>
+          <div class="price-value price-value-sm" id="range-high">—</div>
+          <div class="price-sub" id="range-high-sub"></div>
+        </div>
+      </div>
+
+      <div id="range-chart" class="chart-wrap"></div>
+
+      <div id="confidence-banner" class="banner"></div>
+      <div id="skipped-notice" class="banner banner-info hidden"></div>
+
+      <h3 class="section-title">What drove this estimate</h3>
+      <div id="contrib-chart" class="chart-wrap"></div>
+
+      <p class="disclaimer">
+        ⚠️ This is a demonstration model estimate, not a professional valuation.
+        It reflects the training data's collection period, not necessarily today's
+        market, and should not be used as the sole basis for a financial decision.
+      </p>
+    </div>
+  </section>
+
+  <section class="card metrics-card">
+    <details id="metrics-details">
+      <summary>📊 Model performance &amp; validation <span class="muted">(cross-check the numbers above)</span></summary>
+      <div id="metrics-body" class="metrics-body">Loading…</div>
+    </details>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>Built on a conformal-prediction + SHAP-style uncertainty pipeline. Source on
+    <a href="https://github.com/Lin-2352/house-price-prediction" target="_blank" rel="noopener">GitHub</a>.</p>
+</footer>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

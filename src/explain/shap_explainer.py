@@ -28,31 +28,10 @@ from sklearn.linear_model import Ridge
 from sklearn.pipeline import Pipeline
 from xgboost import XGBRegressor
 
+from src.explain.feature_names import feature_name_map as _feature_name_map
 from src.features.common import FeatureSpec
 
 BACKGROUND_SAMPLE_SIZE = 100
-
-
-def _feature_name_map(preprocessor, spec: FeatureSpec) -> dict[str, str]:
-    """Maps each post-preprocessing transformed column name back to the
-    original input column it came from."""
-    names = preprocessor.get_feature_names_out()
-    nominal_sorted = sorted(spec.nominal_cols, key=len, reverse=True)
-    mapping = {}
-    for full_name in names:
-        group, _, remainder = full_name.partition("__")
-        if group in ("num", "ord", "loc"):
-            mapping[full_name] = remainder
-        elif group == "nom":
-            match = None
-            for col in nominal_sorted:
-                if remainder == col or remainder.startswith(col + "_"):
-                    match = col
-                    break
-            mapping[full_name] = match or remainder
-        else:
-            mapping[full_name] = remainder
-    return mapping
 
 
 @dataclass

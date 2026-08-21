@@ -10,3 +10,5 @@ plotly==6.8.0
 pyarrow==24.0.0
 tabulate==0.10.0
 kaggle==2.2.4
+fastapi==0.135.1
+uvicorn[standard]==0.42.0
