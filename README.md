@@ -1,7 +1,7 @@
 # House Price Estimator — Reliable Ranges, Not Just a Number
 
-A house-price estimator for two markets — **Ames, Iowa (USA)** and **Indian
-metro cities** — that reports, for every prediction:
+A house-price estimator for **Indian metro cities** (Bangalore, Chennai,
+Delhi, Hyderabad, Kolkata, Mumbai) that reports, for every prediction:
 
 1. A **predicted price**
 2. A **90% price range**, built with conformal prediction and empirically
@@ -25,19 +25,26 @@ report one number and one average accuracy figure. That tells a user
 nothing about whether *their specific house* is one the model handles
 well. This project reports honest, per-house uncertainty instead.
 
-## Results (see `reports/*_evaluation_report.md` for full tables)
+## Results (India, test set touched once — see `reports/india_evaluation_report.md` for full tables)
 
-| Market | Point model | Test MAPE | Test log-RMSE | CQR 90% coverage |
-|---|---|---|---|---|
-| Ames (USD) | XGBoost | 7.7% | 0.111 | 88.7% |
-| India (INR) | XGBoost | 51.1% | 0.656 | 89.9% |
+| Point model | Test MAPE | Test log-RMSE | CQR 90% coverage |
+|---|---|---|---|
+| XGBoost | 51.1% | 0.656 | 89.9% |
 
-The India model is markedly less accurate — reported honestly, not
-averaged away. The Indian dataset lists **asking prices, not confirmed
-sale prices**, has no transaction date, and ~70% of its amenity fields are
-unrecorded. This is a real, stated limitation of the *data*, not a bug —
-see `reports/india_evaluation_report.md` for the full breakdown by city
-and price bracket.
+This accuracy is markedly weaker than a well-behaved regression problem —
+reported honestly, not averaged away. The Indian dataset lists **asking
+prices, not confirmed sale prices**, has no transaction date, and ~70% of
+its amenity fields are unrecorded. This is a real, stated limitation of
+the *data*, not a bug. The app's "Model performance & validation" panel
+shows the full breakdown by city and price bracket so any prediction can
+be cross-checked against how the model actually performs on similar
+houses.
+
+The underlying pipeline code (`src/`) is market-agnostic and originally
+also trained an Ames Housing (USA) model as a cross-check that the
+approach works on a cleaner dataset (7.7% MAPE there) — that artifact
+still exists under `artifacts/ames/` for reference, but the deployed app
+is India-only per current scope.
 
 ## Project layout
 

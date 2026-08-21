@@ -1,14 +1,18 @@
-"""House Price Estimator -- Streamlit demo app.
+"""House Price Estimator (India) -- Streamlit demo app.
 
-Loads a persisted per-market bundle (see src/pipeline.py) and lets a user
-fill in house features to get: a predicted price, a 90% price range (from
-the adaptive/CQR conformal arm, with split-conformal as a comparison
+Loads the persisted India-market bundle (see src/pipeline.py) and lets a
+user fill in flat features to get: a predicted price, a 90% price range
+(from the adaptive/CQR conformal arm, with split-conformal as a comparison
 toggle), a SHAP-based explanation of what drove the estimate, and a
-low-confidence warning when the house is unusual or the range is unusually
-wide. This is a demonstration app, not a licensed valuation service --
-every result carries that disclaimer.
+low-confidence warning when the flat is unusual or the range is unusually
+wide. A "Model performance & validation" panel shows the held-out test-set
+metrics the prediction can be cross-checked against, so the numbers aren't
+taken on faith. This is a demonstration app, not a licensed valuation
+service -- every result carries that disclaimer.
 """
 from __future__ import annotations
+
+import json
 
 import numpy as np
 import pandas as pd
@@ -20,23 +24,9 @@ from src.features.common import log1p_columns
 from src.models import persist
 from src.uncertainty.conformal import predict_interval_currency
 
-st.set_page_config(page_title="House Price Estimator", page_icon="🏠", layout="wide")
+MARKET_NAME = "india"
 
-MARKET_LABELS = {"ames": "🇺🇸 United States (Ames, Iowa)", "india": "🇮🇳 India (metro cities)"}
-
-# Ames has 82 input fields -- grouped into collapsible sections so the form
-# stays usable. Anything not listed falls into "Other details".
-AMES_GROUPS = {
-    "Location & basics": ["neighborhood", "ms_zoning", "lot_area", "lot_frontage", "bldg_type", "house_style"],
-    "Size & layout": ["gr_liv_area", "total_area", "total_bsmt_sf", "1st_flr_sf", "2nd_flr_sf",
-                       "bedroom_abv_gr", "full_bath", "half_bath", "kitchen_abv_gr", "tot_rms_abv_grd"],
-    "Age & condition": ["house_age", "years_since_remodel", "overall_qual", "overall_cond",
-                         "exter_qual", "exter_cond", "kitchen_qual", "heating_qc"],
-    "Basement & garage": ["bsmt_qual", "bsmt_cond", "bsmt_exposure", "bsmt_fin_type_1", "bsmt_fin_sf_1",
-                           "garage_type", "garage_finish", "garage_cars", "garage_area", "garage_age"],
-    "Outdoor & extras": ["wood_deck_sf", "open_porch_sf", "pool_area", "fireplaces", "fireplace_qu",
-                          "fence", "central_air", "paved_drive"],
-}
+st.set_page_config(page_title="House Price Estimator — India", page_icon="🏠", layout="wide")
 
 INDIA_GROUPS = {
     "Location & basics": ["city", "location", "area", "bedrooms", "resale"],
@@ -48,13 +38,18 @@ INDIA_GROUPS = {
                    "washing_machine", "dining_table", "gasconnection"],
 }
 
-GROUPS = {"ames": AMES_GROUPS, "india": INDIA_GROUPS}
-
 
 @st.cache_resource(show_spinner="Loading model...")
 def load_market(name: str) -> dict:
     market = get_market(name)
     return persist.load_bundle(market.artifact_dir)
+
+
+@st.cache_data(show_spinner=False)
+def load_metrics(name: str) -> dict:
+    market = get_market(name)
+    path = market.artifact_dir / "metrics.json"
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def render_field(col: str, meta: dict, key_prefix: str, important: bool):
@@ -82,20 +77,19 @@ def render_field(col: str, meta: dict, key_prefix: str, important: bool):
     return np.nan if skip else val
 
 
-def build_input_row(schema: dict, market_name: str, important_fields: list[str]) -> pd.DataFrame:
-    groups = GROUPS[market_name]
-    grouped_cols = {c for cols in groups.values() for c in cols}
+def build_input_row(schema: dict, important_fields: list[str]) -> pd.DataFrame:
+    grouped_cols = {c for cols in INDIA_GROUPS.values() for c in cols}
     important_set = set(important_fields)
     values = {}
 
-    for title, cols in groups.items():
+    for title, cols in INDIA_GROUPS.items():
         with st.expander(title, expanded=(title == "Location & basics")):
             cols_widgets = st.columns(2)
             for i, col in enumerate(cols):
                 if col not in schema:
                     continue
                 with cols_widgets[i % 2]:
-                    values[col] = render_field(col, schema[col], market_name, col in important_set)
+                    values[col] = render_field(col, schema[col], MARKET_NAME, col in important_set)
 
     remaining = [c for c in schema if c not in grouped_cols]
     if remaining:
@@ -103,7 +97,7 @@ def build_input_row(schema: dict, market_name: str, important_fields: list[str])
             cols_widgets = st.columns(2)
             for i, col in enumerate(remaining):
                 with cols_widgets[i % 2]:
-                    values[col] = render_field(col, schema[col], market_name, col in important_set)
+                    values[col] = render_field(col, schema[col], MARKET_NAME, col in important_set)
 
     return pd.DataFrame([values])
 
@@ -112,23 +106,106 @@ def fmt_currency(x: float, symbol: str) -> str:
     return f"{symbol}{x:,.0f}"
 
 
-def main():
-    st.title("🏠 House Price Estimator")
+def fmt_lakh_crore(x: float) -> str:
+    """India-idiomatic magnitude alongside the raw rupee figure."""
+    if abs(x) >= 1e7:
+        return f"₹{x / 1e7:,.2f} Cr"
+    if abs(x) >= 1e5:
+        return f"₹{x / 1e5:,.2f} L"
+    return f"₹{x:,.0f}"
+
+
+def render_metrics_panel(metrics: dict, symbol: str):
+    st.subheader("📊 Model performance & validation")
     st.caption(
-        "A demonstration model that reports a predicted price, a 90%-confidence price range "
-        "validated by conformal prediction, and an explanation of what drove the estimate -- "
-        "not just a single confident-looking number."
+        "These are held-out **test-set** metrics — computed once, on data the model never saw during "
+        "training or calibration — so you can cross-check any prediction above against how the model "
+        "actually performs. Full tables are also in `reports/india_evaluation_report.md` in the repo."
     )
 
-    market_name = st.radio("Market", options=list(MARKET_LABELS), format_func=lambda k: MARKET_LABELS[k], horizontal=True)
-    bundle = load_market(market_name)
-    market = get_market(market_name)
+    pa = metrics["point_accuracy"]
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Mean Absolute Error", fmt_lakh_crore(pa["mae"]))
+    c2.metric("RMSE", fmt_lakh_crore(pa["rmse"]))
+    c3.metric("MAPE", f"{pa['mape']:.1f}%")
+    c4.metric("Log-price RMSE", f"{pa['rmse_log']:.3f}")
+    st.caption(
+        "⚠️ MAPE of ~51% reflects real limitations of this dataset (asking prices, not confirmed sale "
+        "prices; no transaction date; ~70% of amenity fields unrecorded) — reported honestly rather than "
+        "averaged away. Treat point predictions as rough, and lean on the 90% range and confidence flag."
+    )
+
+    st.markdown("**90% price-range coverage & width, by method** (target coverage = 90%)")
+    cov_df = pd.DataFrame(metrics["coverage_table"])
+    cov_df["coverage"] = (cov_df["coverage"] * 100).round(1).astype(str) + "%"
+    cov_df["avg_width"] = cov_df["avg_width"].apply(lambda v: fmt_lakh_crore(v))
+    cov_df["median_width"] = cov_df["median_width"].apply(lambda v: fmt_lakh_crore(v))
+    cov_df.columns = ["Method", "Coverage", "Avg. range width", "Median range width"]
+    st.dataframe(cov_df, hide_index=True, width="stretch")
+
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.markdown("**Accuracy by price bracket**")
+        br_df = pd.DataFrame(metrics["bracket_table"])
+        br_df["mae"] = br_df["mae"].apply(fmt_lakh_crore)
+        br_df["rmse"] = br_df["rmse"].apply(fmt_lakh_crore)
+        br_df["mape"] = br_df["mape"].round(1).astype(str) + "%"
+        br_df.columns = ["Price bracket", "n", "MAE", "RMSE", "MAPE"]
+        st.dataframe(br_df, hide_index=True, width="stretch")
+    with col_b:
+        st.markdown("**90% CQR range coverage by city**")
+        seg_df = pd.DataFrame(metrics["segment_table"])
+        seg_df["coverage"] = (seg_df["coverage"] * 100).round(1).astype(str) + "%"
+        seg_df["avg_width"] = seg_df["avg_width"].apply(fmt_lakh_crore)
+        seg_df = seg_df[["segment", "n", "coverage", "avg_width"]]
+        seg_df.columns = ["City", "n (test)", "Coverage", "Avg. width"]
+        st.dataframe(seg_df, hide_index=True, width="stretch")
+
+    st.markdown("**Confidence flag validation** — flagged predictions should be measurably worse")
+    cf = metrics["confidence_flag_validation"]
+    cf_df = pd.DataFrame([
+        {"Group": "🚩 Flagged low-confidence", "n": cf["flagged"]["n"],
+         "MAE": fmt_lakh_crore(cf["flagged"]["mae"]), "MAPE": f"{cf['flagged']['mape']:.1f}%"},
+        {"Group": "✅ Not flagged", "n": cf["not_flagged"]["n"],
+         "MAE": fmt_lakh_crore(cf["not_flagged"]["mae"]), "MAPE": f"{cf['not_flagged']['mape']:.1f}%"},
+    ])
+    st.dataframe(cf_df, hide_index=True, width="stretch")
+    st.caption(
+        "Flagged predictions do show a higher MAPE than unflagged ones — the confidence flag is catching "
+        "genuinely worse predictions, not just adding noise."
+    )
+
+    st.markdown("**Cross-validation comparison of candidate models** (train-only, log-price RMSE — lower is better)")
+    cv_df = pd.DataFrame([
+        {"Model": "Linear (Ridge)", "CV RMSE (log)": f"{metrics['cv_rmse_log']['linear']:.4f}"},
+        {"Model": "Random Forest", "CV RMSE (log)": f"{metrics['cv_rmse_log']['random_forest']:.4f}"},
+        {"Model": "XGBoost (selected)", "CV RMSE (log)": f"{metrics['cv_rmse_log']['xgboost']:.4f}"},
+    ])
+    st.dataframe(cv_df, hide_index=True, width="stretch")
+
+
+def main():
+    st.title("🏠 House Price Estimator — India")
+    st.caption(
+        "A demonstration model for Indian metro flats (Bangalore, Chennai, Delhi, Hyderabad, Kolkata, "
+        "Mumbai) that reports a predicted price, a 90%-confidence price range validated by conformal "
+        "prediction, and an explanation of what drove the estimate — not just a single confident-looking "
+        "number."
+    )
+
+    bundle = load_market(MARKET_NAME)
+    market = get_market(MARKET_NAME)
+    metrics = load_metrics(MARKET_NAME)
     schema = bundle["form_schema"]
+    symbol = bundle["currency_symbol"]
 
-    st.markdown(f"**Model:** {bundle['point_model_name']} · **Test-set error:** {bundle['test_mape']:.1f}% MAPE · "
-                f"**Log-RMSE:** {bundle['test_rmse_log']:.3f}")
+    st.markdown(
+        f"**Model:** {bundle['point_model_name']} · **Test-set error:** {bundle['test_mape']:.1f}% MAPE · "
+        f"**Log-RMSE:** {bundle['test_rmse_log']:.3f} &nbsp;·&nbsp; "
+        f"*(see full validation panel below)*"
+    )
 
-    X_row = build_input_row(schema, market_name, bundle["important_fields"])
+    X_row = build_input_row(schema, bundle["important_fields"])
 
     interval_choice = st.radio(
         "Range method", ["Adaptive (CQR) -- recommended", "Split-conformal"], horizontal=True,
@@ -155,11 +232,12 @@ def main():
         is_flagged = bool(flagger.flag(np.array([width_ratio]), np.array([novelty]), np.array([missing_count]))[0])
         reasons = flagger.explain_flag(width_ratio, novelty, missing_count)
 
-        symbol = bundle["currency_symbol"]
+        st.divider()
+        st.subheader("Prediction")
         c1, c2, c3 = st.columns(3)
-        c1.metric("Predicted price", fmt_currency(point_currency, symbol))
-        c2.metric("90% range — low", fmt_currency(lower, symbol))
-        c3.metric("90% range — high", fmt_currency(upper, symbol))
+        c1.metric("Predicted price", fmt_lakh_crore(point_currency), fmt_currency(point_currency, symbol))
+        c2.metric("90% range — low", fmt_lakh_crore(lower), fmt_currency(lower, symbol))
+        c3.metric("90% range — high", fmt_lakh_crore(upper), fmt_currency(upper, symbol))
 
         fig = go.Figure()
         fig.add_trace(go.Bar(x=[upper - lower], y=["90% range"], base=[lower], orientation="h",
@@ -168,7 +246,7 @@ def main():
                                   marker=dict(size=14, color="rgb(99,110,250)"), name="predicted"))
         fig.update_layout(height=180, showlegend=False, margin=dict(l=10, r=10, t=10, b=10),
                            xaxis_title=f"Price ({market.currency_code})")
-        st.plotly_chart(fig, width='stretch')
+        st.plotly_chart(fig, width="stretch")
 
         if is_flagged:
             st.warning(
@@ -194,16 +272,20 @@ def main():
             ))
             fig2.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=10),
                                 xaxis_title="% impact on predicted price vs. a typical house")
-            st.plotly_chart(fig2, width='stretch')
+            st.plotly_chart(fig2, width="stretch")
         else:
             st.info("No single feature stood out as an unusually strong driver for this house.")
 
         st.divider()
         st.caption(
             "⚠️ **This is a demonstration model estimate, not a professional valuation.** "
-            f"It reflects the {market_name} training data's collection period, not necessarily today's market, "
+            "It reflects the training data's collection period, not necessarily today's market, "
             "and should not be used as the sole basis for a financial decision."
         )
+
+    st.divider()
+    with st.expander("📊 Model performance & validation (cross-check the numbers above)", expanded=False):
+        render_metrics_panel(metrics, symbol)
 
 
 if __name__ == "__main__":
