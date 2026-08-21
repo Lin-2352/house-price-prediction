@@ -12,11 +12,15 @@
 \usepackage{setspace}
 \usepackage{longtable}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{eso-pic}
+\usepackage{tikz}
+\usepackage{float}
 
 \onehalfspacing
 \setlength{\parskip}{0.4em}
 \emergencystretch=3em
 \sloppy
+\raggedbottom
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -24,6 +28,15 @@
 \renewcommand{\footrulewidth}{0.4pt}
 \fancyfoot[L]{School of Computer Engineering, KIIT}
 \fancyfoot[R]{\thepage}
+
+% Thin page-border rectangle on every page, matching the sample report.
+\AddToShipoutPictureBG{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[black, line width=0.6pt]
+      ([xshift=0.4in,yshift=0.4in]current page.south west) rectangle
+      ([xshift=-0.4in,yshift=-0.4in]current page.north east);
+  \end{tikzpicture}%
+}
 
 \title{\textbf{House Price Prediction with Reliable Price Ranges\\ and Clear Explanations}}
 \author{}
@@ -40,40 +53,42 @@
 % Title Page
 % ---------------------------------------------------------------------
 \begin{titlepage}
+\begin{singlespace}
 \centering
-\vspace*{0.3cm}
-\includegraphics[width=3cm]{figures/kiit_logo.png}\par
-\vspace{0.5cm}
+\vspace*{0.2cm}
 {\large \textbf{A PROJECT REPORT}\par}
-\vspace{0.25cm}
+\vspace{0.15cm}
 {\normalsize on\par}
-\vspace{0.4cm}
+\vspace{0.3cm}
 {\LARGE \textbf{House Price Prediction with Reliable Price Ranges}\par}
 {\LARGE \textbf{and Clear Explanations}\par}
-\vspace{0.7cm}
+\vspace{0.5cm}
 {\normalsize Submitted to\par}
-\vspace{0.15cm}
+\vspace{0.1cm}
 {\large \textbf{KIIT Deemed to be University}\par}
-\vspace{0.3cm}
-{\normalsize In Partial Fulfilment of the Requirement for the Award of\par}
 \vspace{0.2cm}
+{\normalsize In Partial Fulfilment of the Requirement for the Award of\par}
+\vspace{0.15cm}
 {\large \textbf{BACHELOR OF TECHNOLOGY}\par}
 {\large IN\par}
 {\large \textbf{COMPUTER SCIENCE AND ENGINEERING}\par}
-\vspace{0.7cm}
+\vspace{0.5cm}
 {\normalsize BY\par}
-\vspace{0.2cm}
+\vspace{0.15cm}
 {\large Deepjyoti Bhattacharyya \quad 23053381\par}
-\vspace{0.7cm}
+\vspace{0.5cm}
 {\normalsize UNDER THE GUIDANCE OF\par}
-\vspace{0.2cm}
+\vspace{0.15cm}
 {\large \textbf{Ms. Monalisha Mahapatra}\par}
-\vfill
+\vspace{0.5cm}
+\includegraphics[width=2.4cm]{figures/kiit_logo.png}\par
+\vspace{0.5cm}
 {\large \textbf{SCHOOL OF COMPUTER ENGINEERING}\par}
 {\large \textbf{KIIT DEEMED TO BE UNIVERSITY}\par}
 {\large \textbf{BHUBANESWAR, ODISHA -- 751024}\par}
-\vspace{0.3cm}
+\vspace{0.25cm}
 {\normalsize AUGUST 2026\par}
+\end{singlespace}
 \end{titlepage}
 
 % ---------------------------------------------------------------------
@@ -82,6 +97,14 @@
 \newpage
 \thispagestyle{fancy}
 \begin{center}
+\textbf{KIIT Deemed to be University}\\
+\textbf{School of Computer Engineering}\\
+\textbf{Bhubaneswar, ODISHA -- 751024}
+
+\vspace{0.4cm}
+\includegraphics[width=2.4cm]{figures/kiit_logo.png}
+
+\vspace{0.5cm}
 {\large \textbf{CERTIFICATE}}
 \end{center}
 \vspace{0.6cm}
@@ -97,10 +120,20 @@ under my supervision and guidance.
 To the best of my knowledge, the matter embodied in this report has not been
 submitted elsewhere for the award of any other degree.
 
-\vspace{2cm}
+\vspace{2.5cm}
 \noindent
 \begin{minipage}[t]{0.45\textwidth}
-Date: \\
+Date:
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+\raggedleft
+Signature of Guide
+\end{minipage}
+
+\vspace{1.2cm}
+\noindent
+\begin{minipage}[t]{0.45\textwidth}
 Place: Bhubaneswar
 \end{minipage}
 \hfill
@@ -183,8 +216,12 @@ dataset used throughout this report.
 % Abstract
 % ---------------------------------------------------------------------
 \newpage
-\section*{Abstract}
+\thispagestyle{fancy}
 \addcontentsline{toc}{chapter}{Abstract}
+\begin{center}
+{\large \textbf{ABSTRACT}}
+\end{center}
+\vspace{0.6cm}
 
 Most house-price tools, including commercial ones, report a single confident-looking
 number and a single average accuracy figure, giving a user no way to tell whether
@@ -427,7 +464,7 @@ right-skewed even before any cleaning, with a raw skewness of 13.92 for price an
 3.55 for area, so a small number of very expensive, very large listings would
 otherwise dominate a model trained on the raw scale.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figures/price_area_distribution.pdf}
 \caption{Distribution of raw listing price (in crore rupees) and floor area (in
@@ -473,7 +510,7 @@ not currently support XGBoost directly. Both arms are compared against a no-rang
 baseline and a naive fixed-width band calibrated on the same calibration split, so the
 value of an adaptive range is demonstrated rather than assumed.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.7\textwidth]{figures/cv_leaderboard.pdf}
 \caption{Cross-validated log-price RMSE for the three candidate models, training
@@ -511,7 +548,7 @@ This is precisely why the flagging rule combines three independent signals with 
 novel but only moderately wide-ranged, or extremely wide-ranged but only moderately
 novel, could pass through both ordinary thresholds unflagged.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{figures/novelty_vs_width.pdf}
 \caption{Novelty score versus range-width ratio on the calibration split
@@ -536,7 +573,7 @@ dependency, since XGBoost's native contribution output is used instead
 (Section~\ref{sec:explconf}); this matters concretely on Render's free tier, which
 caps the service at 512\,MB of memory.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/architecture.pdf}
 \caption{System architecture: two frontends served by one shared pipeline, with no
@@ -550,7 +587,7 @@ estimate is least meaningful without either, while locality, bedroom count, and
 resale status may be left unanswered, which is tracked by the confidence flag rather
 than silently ignored. Figure~\ref{fig:appform} shows the deployed form.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.8\textwidth]{figures/app_form.png}
 \caption{The deployed application's input form (house-price-estimator-india.onrender.com).}
@@ -633,7 +670,7 @@ Naive fixed-width baseline & 90.1\% & Rs.\,2.18 Cr & Rs.\,2.18 Cr \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.72\textwidth]{figures/coverage_by_method.pdf}
 \caption{Empirical 90\% coverage achieved by each range-construction method on the
@@ -641,7 +678,7 @@ test split, against the 90\% target (dashed line).}
 \label{fig:coverage}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.72\textwidth]{figures/mape_by_bracket.pdf}
 \caption{Point-prediction MAPE by price quartile, test split. The cheapest bracket
@@ -677,7 +714,7 @@ Mumbai & 1{,}331 & 89.7\% & Rs.\,3.33 Cr \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.75\textwidth]{figures/coverage_by_city.pdf}
 \caption{CQR coverage by city, test split, against the 90\% target (dashed line).
@@ -716,13 +753,29 @@ form submission through the deployed API back to a rendered chart, is what
 Section~\ref{sec:objectives}'s fifth objective -- a working web application, evaluated
 honestly -- refers to in practice, not only as a set of offline numbers.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.55\textwidth]{figures/app_prediction.png}
+\includegraphics[width=0.68\textwidth]{figures/app_prediction.png}
 \caption{A live prediction on the deployed application, showing the predicted price,
 the 90\% range, the low-confidence check, and the per-feature explanation chart for
 a sample Bangalore flat.}
 \label{fig:appresult}
+\end{figure}
+
+The application also exposes its own validation numbers directly to the user, rather
+than asking them to trust the model blindly: an in-app ``Model performance \&
+validation'' panel (Figure~\ref{fig:appmetrics}) surfaces the same point-accuracy and
+coverage-by-method figures reported in Tables~\ref{tab:point} and
+\ref{tab:coverage}, computed once at deploy time and served directly from
+\texttt{/api/metrics} rather than recomputed per request.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.88\textwidth]{figures/app_metrics.png}
+\caption{The deployed application's ``Model performance \& validation'' panel,
+showing the same point-accuracy and coverage-by-method numbers reported in
+Tables~\ref{tab:point} and \ref{tab:coverage}, surfaced directly to the user.}
+\label{fig:appmetrics}
 \end{figure}
 
 % ---------------------------------------------------------------------
