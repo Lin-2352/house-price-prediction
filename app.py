@@ -77,7 +77,7 @@ def render_field(col: str, meta: dict, key_prefix: str, important: bool):
     return np.nan if skip else val
 
 
-def build_input_row(schema: dict, important_fields: list[str]) -> pd.DataFrame:
+def build_input_row(schema: dict, important_fields: list[str]) -> tuple[pd.DataFrame, list[str]]:
     grouped_cols = {c for cols in INDIA_GROUPS.values() for c in cols}
     important_set = set(important_fields)
     values = {}
@@ -99,7 +99,8 @@ def build_input_row(schema: dict, important_fields: list[str]) -> pd.DataFrame:
                 with cols_widgets[i % 2]:
                     values[col] = render_field(col, schema[col], MARKET_NAME, col in important_set)
 
-    return pd.DataFrame([values])
+    skipped_fields = [col for col, val in values.items() if isinstance(val, float) and np.isnan(val)]
+    return pd.DataFrame([values]), skipped_fields
 
 
 def fmt_currency(x: float, symbol: str) -> str:
@@ -205,7 +206,8 @@ def main():
         f"*(see full validation panel below)*"
     )
 
-    X_row = build_input_row(schema, bundle["important_fields"])
+    X_row, skipped_fields = build_input_row(schema, bundle["important_fields"])
+    skipped_important = [c for c in bundle["important_fields"] if c in skipped_fields]
 
     interval_choice = st.radio(
         "Range method", ["Adaptive (CQR) -- recommended", "Split-conformal"], horizontal=True,
@@ -255,6 +257,19 @@ def main():
             )
         else:
             st.success("✅ This prediction falls within the model's normal operating range.")
+
+        if skipped_important:
+            # Always shown when an important field was left blank, independent of
+            # whether that alone was enough to also trip the flag above -- a
+            # missing field is only one of three votes (see confidence/flag.py),
+            # so it can go unflagged while still being worth surfacing on its own.
+            field_names = ", ".join(f"**{f.replace('_', ' ').title()}**" for f in skipped_important)
+            pronoun = "it" if len(skipped_important) == 1 else "them"
+            st.info(
+                f"ℹ️ You left {field_names} unanswered. Predictions are somewhat less "
+                f"reliable without {pronoun}, even when that alone isn't enough to trigger "
+                "the low-confidence warning."
+            )
 
         st.subheader("What drove this estimate")
         explainer = bundle["explainer"]
