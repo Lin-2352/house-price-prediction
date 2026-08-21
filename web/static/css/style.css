@@ -72,13 +72,18 @@ body {
 
 /* ---------- Form groups (accordion) ---------- */
 #form-groups details {
-  border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+  /* No overflow:hidden here -- it would clip the locality combobox's
+     dropdown list, which is positioned absolutely relative to a field
+     inside .group-body. Corner-rounding is handled by summary's own
+     border-radius instead (see below), so we don't need to clip. */
+  border: 1px solid var(--border); border-radius: 12px; margin-bottom: 12px;
 }
 #form-groups summary {
   cursor: pointer; padding: 14px 18px; font-weight: 600; font-size: 15px;
   list-style: none; display: flex; align-items: center; gap: 8px; background: #fafbfe;
-  user-select: none;
+  user-select: none; border-radius: 12px;
 }
+#form-groups details[open] summary { border-radius: 12px 12px 0 0; }
 #form-groups summary::-webkit-details-marker { display: none; }
 #form-groups summary::before {
   content: '›'; display: inline-block; transition: transform .15s ease; font-size: 20px; color: var(--text-muted);
@@ -100,6 +105,26 @@ body {
 
 .skip-toggle { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-muted); cursor: pointer; }
 .skip-toggle input { accent-color: var(--primary); cursor: pointer; }
+
+.required-note { font-size: 11.5px; font-weight: 600; color: var(--primary); letter-spacing: .02em; }
+.field input:invalid { border-color: var(--danger); }
+.field input:focus:invalid { box-shadow: 0 0 0 3px rgba(220,38,38,.12); }
+
+/* Locality combobox (replaces a native <input list=datalist>, which
+   doesn't reliably open its suggestion list on click across browsers). */
+.combo-wrap { position: relative; }
+.combo-list {
+  position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; right: 0;
+  max-height: 220px; overflow-y: auto; margin: 0; padding: 6px; list-style: none;
+  background: var(--card-bg); border: 1.5px solid var(--border); border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+.combo-list li {
+  padding: 8px 10px; border-radius: 6px; font-size: 13.5px; cursor: pointer;
+}
+.combo-list li:hover, .combo-list li:active { background: var(--primary-light); }
+.combo-list li.combo-empty { color: var(--text-muted); cursor: default; }
+.combo-list li.combo-empty:hover { background: none; }
 
 .range-method-row { margin-top: 6px; padding-top: 18px; border-top: 1px solid var(--border); }
 .field-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }

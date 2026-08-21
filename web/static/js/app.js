@@ -16,6 +16,14 @@ const GROUPS = {
 
 let SCHEMA = null;
 
+// city/area are the two inputs a price estimate is least meaningful
+// without (inter-city price variance dwarfs everything else, and floor
+// area is the primary size signal) -- these are required, not skippable.
+// The other "important" fields (location/bedrooms/resale) stay skippable;
+// they're still tracked by the confidence flag (see api/inference.py),
+// just lower-stakes to omit.
+const COMPULSORY_FIELDS = new Set(["city", "area"]);
+
 function titleCase(col) {
   return col.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 }
@@ -33,29 +41,46 @@ function fmtRupees(x) {
 
 // ---------- Form construction ----------
 
+// Per-field locality option lists, keyed by field id, populated by
+// fieldControlHTML and consumed by initCombobox after the HTML is inserted.
+const LOCALITY_OPTIONS = {};
+
 function fieldControlHTML(col, meta, isImportant) {
   const id = `field_${col}`;
+  const compulsory = COMPULSORY_FIELDS.has(col);
+  const req = compulsory ? "required" : "";
   let control;
   if (meta.type === "numeric") {
-    control = `<input type="number" id="${id}" name="${col}" min="${meta.min}" max="${meta.max}" value="${meta.median}" step="${Number.isInteger(meta.median) && Number.isInteger(meta.min) && Number.isInteger(meta.max) ? 1 : "any"}">`;
+    control = `<input type="number" id="${id}" name="${col}" min="${meta.min}" max="${meta.max}" value="${meta.median}" step="${Number.isInteger(meta.median) && Number.isInteger(meta.min) && Number.isInteger(meta.max) ? 1 : "any"}" ${req}>`;
   } else if (meta.type === "ordinal") {
     const mid = Math.floor(meta.categories.length / 2);
     const opts = meta.categories.map((c, i) => `<option value="${c}" ${i === mid ? "selected" : ""}>${c}</option>`).join("");
-    control = `<select id="${id}" name="${col}">${opts}</select>`;
+    control = `<select id="${id}" name="${col}" ${req}>${opts}</select>`;
   } else if (meta.type === "locality") {
-    const listId = `${id}_list`;
-    const datalist = `<datalist id="${listId}">${meta.categories.map(c => `<option value="${c}">`).join("")}</datalist>`;
-    control = `<input type="text" list="${listId}" id="${id}" name="${col}" value="${meta.categories[Math.floor(meta.categories.length / 3)] || ''}">${datalist}`;
+    // Hand-rolled combobox, not a native <input list=datalist> -- datalist
+    // suggestion lists don't reliably open on click across browsers (the
+    // dropdown arrow Chrome draws isn't a real clickable affordance the
+    // way it is on <select>), which is exactly the bug this replaces.
+    LOCALITY_OPTIONS[id] = meta.categories;
+    const defaultVal = meta.categories[Math.floor(meta.categories.length / 3)] || "";
+    control = `
+      <div class="combo-wrap">
+        <input type="text" id="${id}" name="${col}" value="${defaultVal}" autocomplete="off" role="combobox" aria-expanded="false" aria-autocomplete="list">
+        <ul class="combo-list" id="${id}_list" role="listbox" hidden></ul>
+      </div>`;
   } else { // nominal
     const opts = meta.categories.map((c, i) => `<option value="${c}" ${i === 0 ? "selected" : ""}>${c}</option>`).join("");
-    control = `<select id="${id}" name="${col}">${opts}</select>`;
+    control = `<select id="${id}" name="${col}" ${req}>${opts}</select>`;
   }
 
-  const skipToggle = isImportant
-    ? `<label class="skip-toggle" title="Leave this important field unanswered -- the estimate will be flagged as lower-confidence if enough signals agree.">
+  let footer = "";
+  if (compulsory) {
+    footer = `<span class="required-note">Required</span>`;
+  } else if (isImportant) {
+    footer = `<label class="skip-toggle" title="Leave this important field unanswered -- the estimate will be flagged as lower-confidence if enough signals agree.">
          <input type="checkbox" data-skip-for="${id}"> Unknown / skip
-       </label>`
-    : "";
+       </label>`;
+  }
 
   return `
     <div class="field" data-field="${col}">
@@ -63,8 +88,47 @@ function fieldControlHTML(col, meta, isImportant) {
         <span class="field-label">${titleCase(col)}</span>
       </div>
       ${control}
-      ${skipToggle}
+      ${footer}
     </div>`;
+}
+
+function initCombobox(input, listEl, options) {
+  function render(filter) {
+    const q = filter.trim().toLowerCase();
+    const matches = (q ? options.filter(o => o.toLowerCase().includes(q)) : options).slice(0, 200);
+    if (!matches.length) {
+      listEl.innerHTML = `<li class="combo-empty">No matches</li>`;
+    } else {
+      listEl.innerHTML = matches.map(o => `<li role="option" tabindex="-1">${o}</li>`).join("");
+    }
+    listEl.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+  }
+
+  function close() {
+    listEl.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+  }
+
+  input.addEventListener("focus", () => render(""));
+  input.addEventListener("click", () => render(input.value));
+  input.addEventListener("input", () => render(input.value));
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { close(); input.blur(); }
+  });
+  listEl.addEventListener("mousedown", (e) => {
+    // mousedown (not click) fires before the input's blur, so we can grab
+    // the selection before the list gets hidden by the blur handler below.
+    const li = e.target.closest("li[role=option]");
+    if (!li) return;
+    input.value = li.textContent;
+    close();
+  });
+  input.addEventListener("blur", () => {
+    // Small delay so a click on a list item (mousedown above) still lands
+    // before we hide the list.
+    setTimeout(close, 120);
+  });
 }
 
 function renderForm(schema) {
@@ -98,6 +162,13 @@ function renderForm(schema) {
     cb.addEventListener("change", () => {
       target.disabled = cb.checked;
     });
+  });
+
+  // Wire up locality comboboxes.
+  container.querySelectorAll(".combo-wrap").forEach(wrap => {
+    const input = wrap.querySelector("input");
+    const list = wrap.querySelector(".combo-list");
+    initCombobox(input, list, LOCALITY_OPTIONS[input.id] || []);
   });
 }
 
@@ -290,8 +361,20 @@ async function boot() {
   document.getElementById("model-badge").textContent =
     `Model: ${schema.point_model_name} · Test-set error: ${schema.test_mape.toFixed(1)}% MAPE · Log-RMSE: ${schema.test_rmse_log.toFixed(3)}`;
 
-  document.getElementById("estimate-form").addEventListener("submit", async (e) => {
+  const form = document.getElementById("estimate-form");
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // Native constraint validation (required/min/max) never ran until now
+    // -- preventDefault() above stops the actual navigation, but
+    // reportValidity() is a separate imperative check: it evaluates the
+    // form's current fields and shows the browser's built-in inline bubble
+    // on the first invalid one. Disabled fields (skipped ones) are
+    // automatically excluded from this check by spec, so skipping Location/
+    // Bedrooms/Resale never blocks submission -- only a truly out-of-range
+    // or emptied City/Area does.
+    if (!form.reportValidity()) return;
+
     const btn = document.getElementById("submit-btn");
     btn.disabled = true;
     btn.textContent = "Estimating…";
